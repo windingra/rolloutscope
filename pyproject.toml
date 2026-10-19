@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rolloutscope"
+version = "0.1.0"
+description = "A linter for RL rollouts: read agent traces from verl / TRL / OTel, find zero-advantage groups, entropy collapse, reward hacking and wasted compute."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "rolloutscope contributors" }]
+keywords = ["rl", "grpo", "agent", "trace", "opentelemetry", "diagnostics", "verl", "trl"]
+dependencies = ["pandas>=2.0", "numpy>=1.24"]
+
+[project.optional-dependencies]
+parquet = ["pyarrow>=14"]
+dev = ["pytest>=8", "pyarrow>=14", "ruff>=0.5"]
+
+[project.scripts]
+rolloutscope = "rolloutscope.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/your-org/rolloutscope"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rolloutscope"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 115
+target-version = "py310"
+
+[tool.ruff.lint]
+# Broad `except Exception` is deliberate in the adapter/rule layer: a missing
+# column or a broken rule must degrade to a skipped finding, never crash a
+# report. NaN is detected with `x != x` on purpose (no numpy dependency there).
+ignore = ["BLE001", "S110", "RUF046", "PLR0124", "RUF007"]
